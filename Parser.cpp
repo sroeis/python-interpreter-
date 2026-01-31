@@ -1,7 +1,7 @@
 #include "Parser.h"
 #include <iostream>
 #define TAB "\t"
-std::unordered_map<std::string, std::unique_ptr<Type>> Parser::_variables;
+std::unordered_map<std::string, std::shared_ptr<Type>> Parser::_variables;
 Type* Parser::parseString(std::string str)
 {
 	if (str.at(0) == *TAB || str.at(0) == ' ')
@@ -38,11 +38,11 @@ Type* Parser::getType(std::string& str)
 	if (Helper::isBoolean(str))
 	{
 		bool val;
-		if (str == "false")
+		if (str == "False")
 		{
 			val = false;
 		}
-		else {
+		else if (str == "True") {
 			val = true;
 		}
 		return new Boolean(val,true);
@@ -55,6 +55,125 @@ Type* Parser::getType(std::string& str)
 	else if (Helper::isString(str))
 	{
 		return new String(str, true);
+	}
+	else if (Helper::isList(str))
+	{
+		std::vector<Type*> TempElements;
+		// empty list
+		if (str.size() == 2)
+		{
+			return new List(TempElements, true);
+		}
+		bool run = true;
+		size_t Start_Pos = 1;
+		size_t Comma_Pos = 1;
+		std::string temp;
+		while (run)
+		{
+			Comma_Pos = str.find(",", Start_Pos);
+			if (Comma_Pos == std::string::npos)
+			{
+				run = false;
+				temp = str.substr(Start_Pos);
+				temp.pop_back();
+			}
+			else {
+				temp = str.substr(Start_Pos, Comma_Pos - Start_Pos);
+				Start_Pos = Comma_Pos + 1;
+			}
+
+			Helper::trim(temp);
+			TempElements.push_back(getType(temp));
+		}
+		return new List(TempElements, true);
+
+	}
+	else if (Helper::isFunc(str)) 
+	{
+		// if were in here than that means we have something like this : type(......)   
+		size_t P_Index = str.find("(");
+
+		//getting whats in the parentheses
+		std::string VarName = str.substr(P_Index + 1);// VarName = kamdkaida)
+		Helper::rtrim(VarName);
+		VarName.pop_back();
+
+		if (VarName.empty())
+		{
+			throw SyntaxException();
+		}
+		//checking if its a variable
+		Type* T = getVariableValue(VarName);
+		if (T != nullptr)
+		{
+			return new Function(T->getKind());
+		}
+		else {
+			T = getType(VarName);
+			if (T != nullptr)
+			{
+				return new Function(T->getKind());
+			}
+			throw NameErrorException(VarName);
+		}
+	}
+	else if (Helper::isDel(str))
+	{
+		std::string Sub = str.substr(3);//if del ..... so ( .....) onwards
+		Helper::trim(Sub);
+		if (Sub.empty())
+		{
+			throw SyntaxException();
+		}
+		Type* T = getVariableValue(Sub);
+		if (T != nullptr)
+		{
+			_variables.erase(Sub);
+			return new Void(true);
+		}
+		else {
+			throw NameErrorException(Sub);
+		}
+
+	}
+	else if (Helper::isLen(str))
+	{
+		if (str == "len")
+		{
+			return new Function(TypeKind::Len);
+		}
+
+		size_t P_Index = str.find("(");
+		size_t PR_Index = str.find(")");
+		if (P_Index == std::string::npos || PR_Index == std::string::npos)
+		{
+			throw SyntaxException();
+		}
+
+		std::string Sub = str.substr(P_Index + 1);
+		Sub.pop_back();
+		Type* T = getVariableValue(Sub);
+		size_t size = 0;
+		if (T != nullptr)
+		{
+			auto kind = T->getKind();
+			if (kind == TypeKind::List || kind == TypeKind::Str)
+			{
+				if (auto* Seq = dynamic_cast<Sequence*>(T))
+				{
+					size = Seq->getSize();
+					return new Integer(size, true);
+				}
+				else{}
+			}
+			else {
+				throw TypeException(kind);
+			}
+		}
+		else {
+			throw NameErrorException(Sub);
+		}
+
 	}
 	else {
 		return nullptr;
@@ -91,6 +210,10 @@ bool Parser::makeAssignment(std::string& str)
 
 		Helper::trim(varValue);
 		Helper::trim(varName);
+		if (Helper::isFunc(varValue) || Helper::isDel(varValue) )
+		{
+			throw SyntaxException();
+		}
 		Type* type = getType(varValue);
 		if (!isLegalVarName(varName) || type == nullptr)
 		{
@@ -110,10 +233,18 @@ bool Parser::makeAssignment(std::string& str)
 						throw NameErrorException(varValue);
 					}
 					else {
-						Type* deepCopy = VarType->clone();
-						// if yes then assign varValue into varName (deep copy)
-						_variables.insert_or_assign(varName, std::unique_ptr<Type>(deepCopy));
+						
+						if (VarType->isList())
+						{
+							_variables.insert_or_assign(varName, std::shared_ptr<Type>(VarType));
+						}
+						else {
+							Type* deepCopy = VarType->clone();
+							// if yes then assign varValue into varName (deep copy)
+							_variables.insert_or_assign(varName, std::shared_ptr<Type>(deepCopy));
+						}
 						return true;
+
 					}
 				}
 			}
@@ -121,7 +252,7 @@ bool Parser::makeAssignment(std::string& str)
 			throw SyntaxException();
 		}
 		type->setIsTemp(false);
-		_variables.insert_or_assign(varName, std::unique_ptr<Type>(type));
+		_variables.insert_or_assign(varName, std::shared_ptr<Type>(type));
 		return true;
 	}
 	else if (equalIndex == std::string::npos)

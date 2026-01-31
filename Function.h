@@ -1,13 +1,17 @@
 #pragma once
 #include "Type.h"
-
-class Void : public Type
+#include "SyntaxException.h"
+class Function : public Type
 {
 public:
-	Void(bool temp);
+	Function() = default;
+	Function(const TypeKind val);
 	const bool isPrintable() override;
 	const std::string toString() override;
-	Void* clone() const override;
+	Type* clone() const override;
 	const bool isList() override;
 	const TypeKind getKind() override;
+
+private:
+	std::string _value;
 };

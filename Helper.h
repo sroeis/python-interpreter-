@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <iostream>
 
 
 // this is service class with static functions
@@ -17,6 +18,14 @@ public:
 
 	// check if the parameter is digit
 	static bool isDigit(const char c);
+
+	static bool isList(const std::string& str);
+
+	static bool isFunc(const std::string& s);
+
+	static bool isDel(const std::string& s);
+
+	static bool isLen(const std::string& s);
 
 	// check if the parameter is lower letter
 	static bool isLowerLetter(const char c);	

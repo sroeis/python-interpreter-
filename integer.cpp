@@ -20,3 +20,13 @@ Type* Integer::clone() const
 {
     return new Integer(*this);
 }
+
+const bool Integer::isList()
+{
+    return false;
+}
+
+const TypeKind Integer::getKind()
+{
+    return TypeKind::Int;
+}

@@ -19,3 +19,13 @@ Void* Void::clone() const
 {
     return new Void(*this);
 }
+
+const bool Void::isList()
+{
+    return false;
+}
+
+const TypeKind Void::getKind()
+{
+    return TypeKind::Void;
+}

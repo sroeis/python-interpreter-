@@ -1,17 +1,18 @@
 #pragma once
 #include "sequence.h"
-
-class String : public Sequence
+#include <vector>
+#include <iostream>
+class List : public Sequence
 {
 public:
-	String(std::string val, bool temp);
+	List(std::vector<Type*>& TempElements, bool isTemp);
 	const bool isPrintable() override;
 	const std::string toString() override;
-	String* clone() const override;
+	List* clone() const override;
 	const bool isList() override;
 	const TypeKind getKind() override;
 	size_t getSize();
 
 private:
-	std::string _value;
+	std::vector<Type*> _elements;
 };

@@ -34,3 +34,18 @@ String* String::clone() const
 {
     return new String(*this);
 }
+
+const bool String::isList()
+{
+    return false;
+}
+
+const TypeKind String::getKind()
+{
+    return TypeKind::Str;
+}
+
+size_t String::getSize()
+{
+    return _value.size() - 2;
+}

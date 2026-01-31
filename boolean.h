@@ -8,6 +8,8 @@ public:
 	const bool isPrintable() override;
 	const std::string toString() override;
 	Boolean* clone() const override;
+	const bool isList() override;
+	const TypeKind getKind() override;
 
 private:
 	bool _value;

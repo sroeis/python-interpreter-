@@ -28,3 +28,13 @@ Boolean* Boolean::clone() const
 {
     return new Boolean(*this);
 }
+
+const bool Boolean::isList()
+{
+    return false;
+}
+
+const TypeKind Boolean::getKind()
+{
+    return TypeKind::Bool;
+}

@@ -43,6 +43,34 @@ bool Helper::isDigit(const char c)
 	return (c >= '0' && c <= '9');
 }
 
+bool Helper::isList(const std::string& str)
+{
+	return str.at(0) == '[' && str.at(str.size() - 1) == ']';
+}
+
+bool Helper::isFunc(const std::string& s)
+{
+	//s = type(kamdkaida)
+	size_t P_Index = s.find("(");
+	size_t PR_Index = s.find(")");
+	if (P_Index == std::string::npos || PR_Index == std::string::npos)
+	{
+		return false;
+	}
+	std::string Sub = s.substr(0, P_Index);// Sub = type
+	return Sub == "type" && PR_Index > P_Index;
+}
+
+bool Helper::isDel(const std::string& s)
+{
+	return s.substr(0, 3) == "del";
+}
+
+bool Helper::isLen(const std::string& s)
+{
+	return s.substr(0, 3) == "len";
+}
+
 void Helper::trim(std::string &str)
 {
 	rtrim(str);

@@ -20,29 +20,35 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="boolean.cpp" />
+    <ClCompile Include="Function.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="IndentationException.cpp" />
     <ClCompile Include="integer.cpp" />
     <ClCompile Include="Interpreter.cpp" />
+    <ClCompile Include="List.cpp" />
     <ClCompile Include="NameErrorException.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="SyntaxException.cpp" />
     <ClCompile Include="Type.cpp" />
+    <ClCompile Include="TypeException.cpp" />
     <ClCompile Include="void.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boolean.h" />
+    <ClInclude Include="Function.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="IndentationException.h" />
     <ClInclude Include="integer.h" />
     <ClInclude Include="InterpreterException.h" />
+    <ClInclude Include="List.h" />
     <ClInclude Include="NameErrorException.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="sequence.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="SyntaxException.h" />
     <ClInclude Include="Type.h" />
+    <ClInclude Include="TypeException.h" />
     <ClInclude Include="void.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
